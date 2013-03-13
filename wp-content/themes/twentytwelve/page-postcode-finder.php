@@ -133,34 +133,38 @@ get_header();
     <div id="primary" class="site-content">
         <div id="content" role="main">
 
-            <?php while (have_posts()) : the_post(); ?>
-                <?php get_template_part('content', 'page');
-                ?>
+            <?php // while (have_posts()) : the_post(); ?>
+            <?php //get_template_part('content', 'page');
+            ?>
 
+            <?php $postcode = $_GET['addressInput']; ?>
 
-                <div>
-                    <form id="postfinder" >
-                        <input type="text" name ="addressInput" id ="addressInput">
-                        <input type="submit" name="submit" value="Search" >
-                    </form>
-                </div>
+            <?php
+            $current_page = get_query_var('paged') ? get_query_var('paged') : 1; //current page
 
-                <div id="map" style="width: 500px; height: 300px"></div>
-                <?php
-                $current_page = get_query_var('paged') ? get_query_var('paged') : 1; //current page
-
-
-                $p = new pagination();
+            if ($_GET[addressInput]) {
                 $x = get_total_rows();
+            }
+            $p = new pagination();
+            $arr = $p->calculate_pages($x, 4, $current_page);
+            //vdump($arr);
 
-                $arr = $p->calculate_pages($x, 2, $current_page);
-                //vdump($arr);
+            $result = find_agent($arr);
+            ?>
+            <?php $xml = simplexml_load_string($result);
+            ?>
+            <div>
+                <form id="postfinder" >
+                    <input type="text" name ="addressInput" id ="addressInput" value="<?php echo $postcode ?>">
+                    <input type="submit" name="submit" value="Search" >
+                </form>
+            </div>
+<?php if ($xml) {
+    if ($_GET['addressInput']) {
+        ?>
+                    <div id="map" style="width: 500px; height: 300px"></div>
+                <?php } ?>
 
-
-                $result = find_agent($arr);
-                ?>
-                <?php $xml = simplexml_load_string($result);
-                ?>
                 <ul id="results">
                     <?php foreach ($xml->marker as $key => $value) { ?>
 
@@ -174,19 +178,34 @@ get_header();
                     <?php } ?>
                 </ul>
                 <div>
+                    <?php if ($x > 4) { ?>
+                        <?php
+                        if ($current_page != '1') {
+                            printf('<a href="/postcode-finder/page/%s/?addressInput=%s"><<<a>', $arr['previous'], $postcode);
+                        } else {
+                            printf('<a href="#"><<<a>');
+                        }
+                        foreach ($arr[pages] as $pages) {
+                            // echo "<a href='/postcode-finder/?addressInput=$postcode&page=$pages'>$pages<a>"; 
 
-                    <?php
-                    $postcode = $_GET['addressInput'];
-                    foreach ($arr[pages] as $pages) {
-                        // echo "<a href='/postcode-finder/?addressInput=$postcode&page=$pages'>$pages<a>"; 
+                            printf('<a href="/postcode-finder/page/%s/?addressInput=%s">%s<a>', $pages, $postcode, $pages);
+                        }
+                        ?>
+                        <?php
+                        if ($current_page != $arr['last']) {
+                            printf('<a href="/postcode-finder/page/%s/?addressInput=%s">>><a>', $arr['next'], $postcode);
+                        } else {
+                            printf('<a href="#">>><a>');
+                        }
+                        ?>
 
-                        printf('<a href="/postcode-finder/page/%s/?addressInput=%s">%s<a>', $pages, $postcode, $pages);
-                    }
-                    ?>
+                    <?php } ?>
                 </div>
-                <?php comments_template('', true); ?>
-            <?php endwhile; // end of the loop.  ?>
 
+                <?php //endwhile; // end of the loop.   ?>
+            <?php } else if ($_GET['addressInput']) { ?>
+                <div>No result Found. Check your postcode.</div>
+            <?php } ?>
         </div><!-- #content -->
     </div><!-- #primary -->
 </body>

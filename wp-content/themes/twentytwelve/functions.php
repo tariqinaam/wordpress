@@ -27,6 +27,7 @@
 include 'debug.php';
 //include 'finder.php';
 include 'dBug.php';
+include 'demo.php';
 include_once 'inc/lib/class/paginator.class.php';
 if (!isset($content_width))
     $content_width = 625;
@@ -484,9 +485,9 @@ if (!function_exists('twentytwelve_comment')) :
 
     function find_agent($arr) {
         $array1 = $arr;
-       
-        
-       $limit = $array1[limit];
+
+
+        $limit = $array1[limit];
         $result = getLocation();
         // echo $result[lat];exit;
         //vdump($result);exit;
@@ -506,10 +507,8 @@ if (!function_exists('twentytwelve_comment')) :
         //$limit = 'limit ' . $page  . ',' . $display_per_page;
         $query = "SELECT * ,( 3959 * acos( cos( radians($center_lat) ) * cos( radians( latitude ) ) 
             * cos( radians( longitude) - radians($center_lng) ) + sin( radians($center_lat) ) 
-                * sin( radians( latitude ) ) ) ) AS distance FROM wp_agent HAVING distance < 25 ORDER BY distance $limit";
+                * sin( radians( latitude ) ) ) ) AS distance FROM wp_agent HAVING distance < 10 ORDER BY distance $limit";
         $results = $wpdb->get_results($query);
-
-        
 
         //header("Content-type: text/xml");
         //Iterate through the rows, adding XML nodes for each
@@ -532,25 +531,63 @@ if (!function_exists('twentytwelve_comment')) :
 //$dom1 = $dom->saveXML();
 //vdump($dom->saveXML());
         return $dom->saveXML();
-        return $results;
+       // return $results;
     }
+    
+    
 
     function get_total_rows() {
         $result = getLocation();
         $center_lat = $result[lat]; //"51.394865"; //
-        $center_lng = $result[lng]; //"-0.193616"; //
+         $center_lng = $result[lng]; //"-0.193616"; //
 
         global $wpdb;
-       
-         $query = "SELECT count(1),( 3959 * acos( cos( radians($center_lat) ) 
+        if($center_lat && $center_lng){
+        $query = "SELECT Id,( 3959 * acos( cos( radians($center_lat) ) 
             * cos( radians( latitude ) ) * cos( radians( longitude) - radians($center_lng) ) + sin( radians($center_lat) ) 
-            * sin( radians( latitude ) ) ) ) AS distance FROM wp_agent HAVING distance < 25 ORDER BY distance";
-        
-        $total_rows = $wpdb->get_var($query);
-       // vdump($total_rows);
-               
+            * sin( radians( latitude ) ) ) ) AS distance FROM wp_agent HAVING distance < 10 ORDER BY distance";
+
+        $total_rows = $wpdb->get_row($query);
+         $rows = mysql_num_rows(mysql_query($query));
         //die;
-        return $total_rows;
+        return $rows;
+        }else{
+            return false;
+        }
     }
+
+    register_taxonomy('demography', array(
+        0 => 'post',
+            ), array('hierarchical' => false, 'label' => 'demography', 'show_ui' => true, 'query_var' => true, 'rewrite' => array('slug' => ''), 'singular_label' => 'demogrpahic'));
+
+ 
+//experience page post type
+    function experience_post_type() {
+        register_post_type('experience', array(
+            'label' => __('Experiences'),
+            'supports' => array('title', 'editor', 'thumbnail'),
+            'show_ui' => true,
+            'show_in_nav_menus' => true,
+            'public'=>false,
+            'taxonomies' => array('demography')
+        ));
+    }
+    add_theme_support('post-thumbnails');
+    add_action('init', 'experience_post_type');
+    
+    //image gallery post type
+     function gallery_post_type() {
+        register_post_type('gallery', array(
+            'label' => __('gallery'),
+            'supports' => array('title','thumbnail'),
+            'show_ui' => true,
+            'show_in_nav_menus' => true,
+            'public'=>false,
+            
+        ));
+    }
+    add_theme_support('post-thumbnails');
+    add_action('init', 'gallery_post_type');
+ 
 
     
