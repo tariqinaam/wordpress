@@ -1,0 +1,24 @@
+;r  slugdiv *
+;a  title * c:n
+
+;a  pageparentdiv + page-attributes *
+;r  pageparentdiv s:home
+
+;a  editor + page *^s:home
+
+;r  editor t:template-listing.php + template-landing.php
+
+;a  categorydiv p:page
+
+;a  page-options *^s:home c:s
+
+;a  home-spotlight + useful-links + home-banner + home-carousel s:home  
+
+;a  listing-options t:template-listing.php
+
+;a  tab-pages t:template-tabs.php 
+
+;a  landing-carousel t:template-landing.php
+
+;a  events p:events + news + schools
+;a  form-submission s:newsletter + contact-us

@@ -159,52 +159,57 @@ get_header();
                     <input type="submit" name="submit" value="Search" >
                 </form>
             </div>
-<?php if ($xml) {
-    if ($_GET['addressInput']) {
-        ?>
-                    <div id="map" style="width: 500px; height: 300px"></div>
-                <?php } ?>
+            <?php if ($_GET['addressInput']) {
+                ?>
+                <?php if ($xml) { ?>
 
-                <ul id="results">
-                    <?php foreach ($xml->marker as $key => $value) { ?>
+                    <div id = "map" style = "width: 500px; height: 300px"></div>
 
-                        <li data-lat="<?php echo $value['lat'] ?>" data-lng="<?php echo $value['lng'] ?>" data-mark ="<?php echo $value['markerpoint']; ?>" >
-                            <span class="marker"><?php echo $value['markerpoint']; ?></span>
-                            <a href ="#na" class="fn"><?php echo $value['name']; ?></a>
-                            <span class="address1"><?php echo $value['address']; ?></span>
-                            <span class="address2"><?php echo $value['address2']; ?></span>
-                            <span class="city"><?php echo $value['city']; ?></span>
-                        </li>
-                    <?php } ?>
-                </ul>
-                <div>
-                    <?php if ($x > 4) { ?>
-                        <?php
-                        if ($current_page != '1') {
-                            printf('<a href="/postcode-finder/page/%s/?addressInput=%s"><<<a>', $arr['previous'], $postcode);
-                        } else {
-                            printf('<a href="#"><<<a>');
-                        }
-                        foreach ($arr[pages] as $pages) {
-                            // echo "<a href='/postcode-finder/?addressInput=$postcode&page=$pages'>$pages<a>"; 
 
-                            printf('<a href="/postcode-finder/page/%s/?addressInput=%s">%s<a>', $pages, $postcode, $pages);
-                        }
-                        ?>
-                        <?php
-                        if ($current_page != $arr['last']) {
-                            printf('<a href="/postcode-finder/page/%s/?addressInput=%s">>><a>', $arr['next'], $postcode);
-                        } else {
-                            printf('<a href="#">>><a>');
-                        }
-                        ?>
+                    <ul id = "results">
+                        <?php foreach ($xml->marker as $key => $value) {
+                            ?>
 
-                    <?php } ?>
-                </div>
+                            <li data-lat="<?php echo $value['lat'] ?>" data-lng="<?php echo $value['lng'] ?>" data-mark ="<?php echo $value['markerpoint']; ?>" >
+                                <span class="marker"><?php echo $value['markerpoint']; ?></span>
+                                <a href ="#na" class="fn"><?php echo $value['name']; ?></a>
+                                <span class="address1"><?php echo $value['address']; ?></span>
+                                <span class="address2"><?php echo $value['address2']; ?></span>
+                                <span class="city"><?php echo $value['city']; ?></span>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                    <div>
+                        <?php if ($x > 4) { ?>
+                            <?php
+                            if ($current_page != '1') {
+                                printf('<a href="/postcode-finder/page/%s/?addressInput=%s"><<<a>', $arr['previous'], $postcode);
+                            } else {
+                                printf('<a href="#"><<<a>');
+                            }
+                            foreach ($arr[pages] as $pages) {
+                                // echo "<a href='/postcode-finder/?addressInput=$postcode&page=$pages'>$pages<a>"; 
 
-                <?php //endwhile; // end of the loop.   ?>
-            <?php } else if ($_GET['addressInput']) { ?>
-                <div>No result Found. Check your postcode.</div>
+                                printf('<a href="/postcode-finder/page/%s/?addressInput=%s">%s<a>', $pages, $postcode, $pages);
+                            }
+                            ?>
+                            <?php
+                            if ($current_page != $arr['last']) {
+                                printf('<a href="/postcode-finder/page/%s/?addressInput=%s">>><a>', $arr['next'], $postcode);
+                            } else {
+                                printf('<a href="#">>><a>');
+                            }
+                            ?>
+
+                        <?php } ?>
+                    </div>
+
+                <?php } else if ($_GET['addressInput']) { ?>
+                    <div>No result Found. Check your postcode.</div>
+                <?php }
+            } else {
+                ?>
+                <div>Please type your postcode.</div>
             <?php } ?>
         </div><!-- #content -->
     </div><!-- #primary -->
